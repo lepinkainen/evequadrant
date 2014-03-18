@@ -14,81 +14,47 @@ from xml.etree import ElementTree
 
 def typeid_to_string(typeid):
     # Check the cache for typeid mapping
-    return "Foo"
     query = TypeMapping.query(TypeMapping.type_id == typeid)
     mapping = query.get()
     if mapping:
+        print "Cache hit"
         log.debug("Cache hit for typeid %d!", typeid)
         return mapping.name
-
-    # Nothing found, use odylab to translate and store it for future use
-    url = "http://odylab-evedb.appspot.com/typeIdToTypeName/%d" % typeid
-    res = urlfetch.fetch(url, follow_redirects=False)
-    if res.status_code == 200:
-        name = res.content
-        mapping = TypeMapping(name=name, type_id=typeid)
-        mapping.put()
-
-        log.debug("Cached %s from odylab" % mapping)
-        print "Cached %s from odylab" % mapping
-        return name
     else:
-        url = "http://api.eve-central.com/api/quicklook?typeid=%d" % typeid
-        res = urlfetch.fetch(url, follow_redirects=False)
-        xml = ElementTree.fromstring(res.content)
-        name = xml.findtext('.//itemname')
-        mapping = TypeMapping(name=name, type_id=typeid)
-        mapping.put()
-
-        log.debug("Cached %s from eve-central" % mapping)
-        print "Cached %s from eve-central" % mapping
-        return name
-
-    log.error("No match found for %d", typeid)
-    return "No match found for %d" % typeid
+        print "Cache miss"
+        return _lookup(typeid)
 
 
 def typeids_to_string(typeids):
     # fetch multiple mappings
-    mappings = ndb.get_multi(typeids)
-    print mappings
     result = {}
-
-    # build the result cache
-    for mapping in mappings:
-        result[mapping.typeid] = mapping.name
+    qo = ndb.QueryOptions()
+    query = TypeMapping.query(TypeMapping.type_id.IN(typeids))
+    for mapping in query.fetch(options=qo):
+        result[mapping.type_id] = mapping.name
 
     for typeid in typeids:
+        # check if the requested keys have values defined
         if result.get(typeid, None):
             print "Cache hit for typeid %d" % typeid
         else:
+            log.debug("Cache miss for %d", typeid)
             result[typeid] =_lookup(typeid)
 
     return result
 
 def _lookup(typeid):
-    # Nothing found, use odylab to translate and store it for future use
-    url = "http://odylab-evedb.appspot.com/typeIdToTypeName/%d" % typeid
+    url = "http://api.eve-central.com/api/quicklook?typeid=%d" % typeid
     res = urlfetch.fetch(url, follow_redirects=False)
-    if res.status_code == 200:
-        name = res.content
-        mapping = TypeMapping(name=name, type_id=typeid)
-        mapping.put()
-
-        log.debug("Cached %s from odylab" % mapping)
-        print "Cached %s from odylab" % mapping
-        return name
-    else:
-        url = "http://api.eve-central.com/api/quicklook?typeid=%d" % typeid
-        res = urlfetch.fetch(url, follow_redirects=False)
-        xml = ElementTree.fromstring(res.content)
-        name = xml.findtext('.//itemname')
+    xml = ElementTree.fromstring(res.content)
+    name = xml.findtext('.//itemname')
+    if name:
         mapping = TypeMapping(name=name, type_id=typeid)
         mapping.put()
 
         log.debug("Cached %s from eve-central" % mapping)
         print "Cached %s from eve-central" % mapping
         return name
-
-    log.error("No match found for %d", typeid)
-    return "No match found for %d" % typeid
+    else:
+        log.error("No match found for %d", typeid)
+        return "No match found for %d" % typeid

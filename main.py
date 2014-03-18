@@ -37,7 +37,6 @@ def account(key=None, verification=None):
     for char_id in a.characters().result:
         log.debug("Creating character %d", char_id)
         character = CharacterFactory.create_character(api, char_id)
-        print character.skill_queue
         characters.append(character)
 
     template = JINJA_ENVIRONMENT.get_template('character_summary.html')
@@ -54,8 +53,6 @@ def character(key=None, verification=None, char_id=None):
     template = JINJA_ENVIRONMENT.get_template('character.html')
 
     character = CharacterFactory.create_character(api, char_id)
-    print character.skill_queue
-    print character.get_skill_queue()
     return template.render({'character': character})
 
 

@@ -50,12 +50,7 @@ class Character(object):
     assets = None
 
     def get_skill_queue(self):
-        #skill_ids = [skill['type_id'] for skill in self.skill_queue]
-        #mappings = typeids_to_string(skill_ids)
-        from collections import defaultdict
-        mappings = defaultdict(None)
-
-        skills = [Skill(skill, name=mappings[skill['type_id']]) for skill in self.skill_queue]
+        skills = [Skill(skill) for skill in self.skill_queue]
         log.debug("Skill queue %s", skills)
         return skills
 
@@ -67,13 +62,13 @@ class Character(object):
         # translate asset IDs in a efficient-ish manner
         for asset in self.assets:
             for item in asset['contents']:
-                asset_ids.append(item['item_type_id'])
+                asset_ids.add(item['item_type_id'])
 
                 for subitem in item.get('contents', []):
-                    asset_ids.append(subitem['item_type_id'])
+                    asset_ids.add(subitem['item_type_id'])
+
 
         mappings = typeids_to_string(asset_ids)
-
 
         for asset in self.assets:
             for item in asset['contents']:
@@ -96,7 +91,7 @@ class Skill(object):
     eta = None   # Time to completion
     done = None  # DateTime of completion
 
-    def __init__(self, skill, name=None):
+    def __init__(self, skill):
         log.debug("Skill object created: %s", skill)
         self.rawdata = skill
         self.type_id = skill['type_id']
