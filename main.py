@@ -14,11 +14,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-from datetime import datetime
-
 import evelink
-from dateutil.relativedelta import *
-
+from evelink import appengine
 from mapping import *
 from objects import *
 from api import *
@@ -29,7 +26,7 @@ JINJA_ENVIRONMENT.filters['to_roman'] = to_roman
 
 @app.route('/account/<key>/<verification>')
 def account(key=None, verification=None):
-    api = evelink.api.API(api_key=(key, verification))
+    api = appengine.AppEngineAPI(api_key=(key, verification))
 
     a = evelink.account.Account(api)
 
@@ -46,7 +43,7 @@ def account(key=None, verification=None):
 @app.route('/character/<key>/<verification>/<char_id>')
 def character(key=None, verification=None, char_id=None):
     """Return a friendly HTTP greeting."""
-    api = evelink.api.API(api_key=(key, verification))
+    api = appengine.AppEngineAPI(api_key=(key, verification))
 
     a = evelink.account.Account(api)
 
@@ -54,6 +51,19 @@ def character(key=None, verification=None, char_id=None):
 
     character = CharacterFactory.create_character(api, char_id)
     return template.render({'character': character})
+
+
+@app.route('/delete')
+def delete():
+    return "Disabled"
+
+    from google.appengine.ext import ndb
+    from mapping import TypeMapping
+    keys = TypeMapping.query().fetch(keys_only=True)
+    for key in keys:
+        print key.delete()
+
+    return "Delete done"
 
 
 @app.route('/')
