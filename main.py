@@ -28,7 +28,7 @@ JINJA_ENVIRONMENT.filters['to_roman'] = to_roman
 def account(key=None, verification=None):
     api = appengine.AppEngineAPI(api_key=(key, verification))
 
-    a = evelink.account.Account(api)
+    a = appengine.account.Account(api)
 
     characters = []
     for char_id in a.characters().result:
@@ -45,7 +45,7 @@ def character(key=None, verification=None, char_id=None):
     """Return a friendly HTTP greeting."""
     api = appengine.AppEngineAPI(api_key=(key, verification))
 
-    a = evelink.account.Account(api)
+    a = appengine.account.Account(api)
 
     template = JINJA_ENVIRONMENT.get_template('character.html')
 

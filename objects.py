@@ -1,4 +1,4 @@
-import evelink
+from evelink import appengine
 import logging as log
 # Objects
 
@@ -8,9 +8,9 @@ from util import *
 class CharacterFactory(object):
     @staticmethod
     def create_character(api, char_id):
-        char = evelink.char.Char(char_id, api)
+        char = appengine.char.Char(char_id, api)
         character_sheet = char.character_sheet().result
-        character_info = evelink.eve.EVE(api=api).character_info_from_id(char.char_id).result
+        character_info = appengine.eve.EVE(api=api).character_info_from_id(char.char_id).result
 
         c = Character()
         c.cid = char_id

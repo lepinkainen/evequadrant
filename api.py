@@ -17,11 +17,8 @@ def typeid_to_string(typeid):
     query = TypeMapping.query(TypeMapping.type_id == typeid)
     mapping = query.get()
     if mapping:
-        print "Cache hit"
-        log.debug("Cache hit for typeid %d!", typeid)
         return mapping.name
     else:
-        print "Cache miss"
         return _lookup(typeid)
 
 
@@ -35,9 +32,8 @@ def typeids_to_string(typeids):
 
     for typeid in typeids:
         # check if the requested keys have values defined
-        if result.get(typeid, None):
-            print "Cache hit for typeid %d" % typeid
-        else:
+        # lookup if the value isn't in the mapping table yet
+        if not result.get(typeid, None):
             log.debug("Cache miss for %d", typeid)
             result[typeid] =_lookup(typeid)
 
@@ -53,7 +49,6 @@ def _lookup(typeid):
         mapping.put()
 
         log.debug("Cached %s from eve-central" % mapping)
-        print "Cached %s from eve-central" % mapping
         return name
     else:
         log.error("No match found for %d", typeid)
