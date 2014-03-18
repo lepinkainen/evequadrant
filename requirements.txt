@@ -5,3 +5,10 @@
 #
 # Note: The `lib` directory is added to `sys.path` by `appengine_config.py`.
 Flask==0.10
+# werkzeug
+# python-dateutil
+# evelink
+# dataset
+# requests
+
+# Successfully installed Flask Werkzeug Jinja2 itsdangerous markupsafe

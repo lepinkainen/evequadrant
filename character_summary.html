@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Eve Quadrant</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="/css/TimeCircles.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <h1>Character summary</h1> <div id="lastupdate" style="float:right">Last update<div class="lastupdatecounter" style="width: 15em;height: 15ex"></div></div>
+
+    {% for character in characters %}
+
+    <h2><img class="img-rounded" src="http://image.eveonline.com/Character/{{ character.cid }}_64.jpg"/><a href="/character/{{ key }}/{{ verification }}/{{ character.cid }}">{{ character.name }}</a> [<img src="http://image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png"/>{{ character.corporation }}]</h2>
+    <table class="table" style="width:50%">
+      <tr>
+        <th>Age</th><td>{{ character.age }}</td>
+      </tr>
+      <tr>
+        <th>Location</th><td>{{ character.location }}</td>
+      </tr>
+      <tr>
+        <th>Ship</th><td><img src="http://image.eveonline.com/InventoryType/{{ character.ship_id }}_32.png"/>{{ character.ship_type }} ({{ character.ship_name }})</td>
+      </tr>
+      <tr>
+        <th>Balance</th><td>{{ character.balance }}</td>
+      </tr>
+      <tr>
+        <th>Skillpoints</th><td>{{ character.skillpoints }}</td>
+      </tr>
+      <tr>
+        <th>Clone skillpoints</th><td>{{ character.clone_skillpoints }}</td>
+      </tr>
+    </table>
+
+    <table class="table" style="width:50%">
+      <thead>
+      <tr>
+        <th>Skill</th>
+        <th>Lvl</th>
+        <th>ETA</th>
+        <th>Complete</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for skill in character.get_skill_queue() %}
+      <tr>
+        <td>{{ skill.name }}</td>
+        <td>{{ skill.level_roman }}</td>
+        <td>{{ skill.eta }}</td>
+        <td>{{ skill.done }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    {% endfor %}
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <!-- Page update counter -->
+    <script type="text/javascript" src="/js/TimeCircles.js"></script>
+    <script type="text/javascript">
+      $(".lastupdatecounter").TimeCircles({time: {
+      Days: { show: false },
+      Hours: { show: false}
+      }});
+    </script>
+
+  </body>
+</html>
+
