@@ -36,6 +36,8 @@ def typeids_to_string(typeids):
         if not result.get(typeid, None):
             log.debug("Cache miss for %d", typeid)
             result[typeid] =_lookup(typeid)
+        else:
+            log.debug("Cache hit: %s", mapping)
 
     return result
 

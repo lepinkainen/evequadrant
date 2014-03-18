@@ -112,6 +112,7 @@ class Asset(object):
     in_container = False
 
     def __init__(self, asset, name=None):
+        log.debug("Asset object created: %s", asset)
         self.type_id = asset['item_type_id']
         self.name = name or typeid_to_string(self.type_id)
         self.quantity = asset['quantity']
