@@ -98,8 +98,13 @@ class Skill(object):
         self.name = typeid_to_string(self.type_id)
         self.level = skill['level']
         self.level_roman = to_roman(self.level)
-        self.eta = timestamp_to_string(skill['end_ts'])
-        self.done = datetime.fromtimestamp(skill['end_ts'])
+        # End time will be None if the skill queue is on hold for some reason
+        if skill['end_ts']:
+            self.eta = timestamp_to_string(skill['end_ts'])
+            self.done = datetime.fromtimestamp(skill['end_ts'])
+        else:
+            self.eta = "None"
+            self.done = "None"
 
 class Asset(object):
     container_id = None
